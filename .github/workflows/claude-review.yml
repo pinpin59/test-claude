@@ -1,0 +1,44 @@
+name: Claude Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    # Ignore les brouillons et les PR Dependabot (pas d'accès aux secrets)
+    if: github.event.pull_request.draft == false && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Review this pull request. The PR branch is already checked out.
+            Focus on, in this order:
+            1. Security: injection, unsafe eval, hardcoded secrets, unvalidated input
+            2. Bugs and edge cases
+            3. Code quality and maintainability
+
+            Write the review in French.
+            Use `mcp__github_inline_comment__create_inline_comment` (with `confirmed: true`) for issues tied to specific lines.
+            Use `gh pr comment` for one summary comment ending with a verdict:
+            "OK pour merge" or "A corriger avant merge".
+            Only post GitHub comments; do not reply with plain messages.
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*)"

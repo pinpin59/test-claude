@@ -1,0 +1,28 @@
+{
+  "name": "test-claude",
+  "version": "1.0.0",
+  "description": "Dépôt de test : workflow PR, CI et sécurité",
+  "scripts": {
+    "test": "vitest run",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky"
+  },
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.0",
+    "vitest": "^5.0.3"
+  },
+  "lint-staged": {
+    "*.{js,ts}": "eslint --max-warnings=0"
+  }
+}

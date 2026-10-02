@@ -1,0 +1,5 @@
+# Bloque le commit si un secret (clé API, mot de passe...) est détecté dans les fichiers indexés
+gitleaks git --pre-commit --staged --redact --no-banner
+
+# Lint uniquement les fichiers modifiés
+npx lint-staged
